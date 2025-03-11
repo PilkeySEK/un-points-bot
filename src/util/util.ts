@@ -1,4 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { addDailyPoints } from "./db";
 
 export class Command {
     constructor(data: SlashCommandBuilder, execute: (interaction: CommandInteraction) => Promise<void>) {
@@ -28,6 +29,10 @@ function daysInMonth(month: number, year: number): number {
     return new Date(year, month + 1, 0).getUTCDate() + 1;
 }
 
-export function addPointsToCurrentMonth(user_id: string, points: number) {
-    // TODO
+export async function addPointsToCurrentDay(user_id: string, points: number) {
+    let date = new Date();
+    const current_day = date.getUTCDate();
+    const current_month = date.getUTCMonth();
+    const current_year = date.getUTCFullYear();
+    await addDailyPoints(user_id, points, current_day, current_month, current_year);
 }

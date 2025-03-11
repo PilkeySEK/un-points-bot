@@ -3,24 +3,26 @@ import { mongo_uri } from "../../config.json";
 import { Collection } from "discord.js";
 
 class DatabaseError extends Error {}
-/*
-interface MonthlyPoints {
+
+interface DailyPoints {
+    day: number;
+    month: number;
+    year: number;
+    points: number;
+}
+export interface MonthlyPoints {
     month: number;
     year: number;
     points: number;
 }
 
-interface LastKnownMonthYear {
-    month: number;
-    year: number;
-}
-*/
 interface User {
     user_id: string;
     points: number;
     wins: number;
     // points_this_month: number;
     // monthly_points: MonthlyPoints[];
+    daily_points: DailyPoints[];
 }
 
 const mongo_client = new MongoClient(mongo_uri);
@@ -104,7 +106,7 @@ async function register_if_not_exist(user_id: string) {
     if(quick_registered_lookup.indexOf(user_id) != -1) return;
     const mongo_res = await user_collection.countDocuments({user_id: user_id}, {limit: 1});
     if(mongo_res == 1) return;
-    let user: User = {user_id: user_id, points: 0, wins: 0 /*, points_this_month: 0, monthly_points: []*/};
+    let user: User = {user_id: user_id, points: 0, wins: 0, daily_points: []};
     register_user(user);
 }
 
@@ -154,47 +156,52 @@ export async function get_wins(user_id: string): Promise<number> {
     return user.wins;
 }
 
-/**
- * Set the points that a user has collected in a certain month (for statistics)
- * @param user_id The id of the user as a string
- * @param year The year
- * @param month The month, 0 is january and 11 is december
- * @param points The points to set, will NOT update the total point amount
- *//*
-export async function set_monthly_points(user_id: string, year: number, month: number, points: number) {
+export async function addDailyPoints(user_id: string, points: number, day: number, month: number, year: number) {
     await register_if_not_exist(user_id);
-    const user = await user_collection.findOne({user_id: user_id});
-    if(user == null) throw new DatabaseError("findOne() returned null");
-    let new_monthly_points = user.monthly_points;
-    for(let i = 0; i < user.monthly_points.length; i++) {
-        const elem = user.monthly_points[i];
-        if(!(elem.month == month && elem.year == year)) continue;
-        new_monthly_points[i].points = points;
-        user_collection.updateOne({user_id: user_id}, {$set: {monthly_points: new_monthly_points}});
-        return;
-    }
-    new_monthly_points.push({year: year, month: month, points: points});
-    user_collection.updateOne({user_id: user_id}, {$set: {monthly_points: new_monthly_points}});
-    return;
-}*/
+    const user_data = await user_collection.findOne({user_id: user_id});
+    if(user_data == null) throw new DatabaseError("user_data is null. Can't proceed");
 
-/**
- * Gets the points gained by a user in a specific month
- * @param user_id The id of the user as a string
- * @param year The year
- * @param month The month, 0 is january and 11 is december
- * @returns The points gained in the specified month. Returns `undefined` if no data exists for the given month
- *//*
-export async function get_monthly_points(user_id: string, year: number, month: number): Promise<number | undefined> {
+    const update_points = async (list: DailyPoints[]) => {
+        const res = await user_collection.updateOne({user_id: user_id}, {$set: {daily_points: daily_points}});
+        if(!res.acknowledged) throw new DatabaseError("Not acknowledged");
+    };
+
+    let daily_points = user_data.daily_points;
+    for(let i = 0; i < daily_points.length; i++) {
+        let elem = daily_points[i];
+        if(!(elem.day == day && elem.month == month && elem.year == year)) continue;
+        elem.points += points;
+        daily_points[i].points = elem.points;
+        update_points(daily_points);
+    }
+    daily_points.push({day: day, month: month, year: year, points: points});
+    update_points(daily_points);
+}
+
+export async function getAllDailyPoints(user_id: string): Promise<DailyPoints[]> {
     await register_if_not_exist(user_id);
-    const user = await user_collection.findOne({user_id: user_id});
-    if(user == null) throw new DatabaseError("findOne() returned null");
-    user.monthly_points.forEach(monthlyPoints => {
-        if(!(monthlyPoints.year == year && monthlyPoints.month == month)) return;
-        return monthlyPoints.points;
+    const user_data = await user_collection.findOne({user_id: user_id});
+    if(user_data == null) throw new DatabaseError("user_data is null. Can't proceed");
+    return user_data.daily_points;
+}
+
+export async function getMonthlyPoints(user_id: string): Promise<MonthlyPoints[]> {
+    await register_if_not_exist(user_id);
+    const user_data = await user_collection.findOne({user_id: user_id});
+    if(user_data == null) throw new DatabaseError("user_data is null. Can't proceed");
+    let monthly: MonthlyPoints[] = [];
+    user_data.daily_points.forEach(element => {
+        for(let i = 0; i < monthly.length; i++) {
+            let elem = monthly[i];
+            if(!(elem.month == element.month && elem.year == element.year)) continue;
+            elem.points += element.points;
+            monthly[i] = elem;
+            return;
+        }
+        monthly.push({month: element.month, year: element.year, points: element.points});
     });
-    return undefined;
-}*/
+    return monthly;
+}
 
 export async function is_connected(): Promise<boolean> {
     let res: any;

@@ -1,5 +1,5 @@
 import { CommandInteraction, EmbedBuilder, MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import { get_user_points, set_user_points } from "../../util/db";
+import { addDailyPoints, get_user_points, set_user_points } from "../../util/db";
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,6 +16,8 @@ module.exports = {
         if (user == undefined) return;
         try {
             await set_user_points(user.id, curr_points + points);
+            let date = new Date();
+            await addDailyPoints(user.id, points, date.getUTCDate(), date.getUTCMonth(), date.getUTCFullYear());
         }
         catch (e) {
             interaction.reply({ content: "Something went wrong :(", flags: MessageFlags.Ephemeral });
