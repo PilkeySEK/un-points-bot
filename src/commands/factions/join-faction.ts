@@ -2,10 +2,11 @@ import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.j
 import { getAllFactions, joinFaction } from "../../util/db";
 import { footer_icon_url } from "../../../config.json";
 
-let factions = await getAllFactions();
-
 module.exports = {
-    data: new SlashCommandBuilder()
+    data: (async () => {
+        const factions = await getAllFactions();
+
+        return new SlashCommandBuilder()
         .setName("join-faction")
         .setDescription("Join the specified faction")
         .addStringOption(option =>
@@ -19,12 +20,12 @@ module.exports = {
                     });
                     return ret;
                 })())
-        ),
+        )})(),
     execute: async (interaction: CommandInteraction) => {
         const faction = interaction.options.get("faction")?.value as string;
         const user = interaction.user;
         await joinFaction(user.id, faction);
-        const faction_name = factions.find(f => f.id == faction);
+        const faction_name = (await getAllFactions()).find(f => f.id == faction);
         await interaction.reply({
             embeds: [new EmbedBuilder()
                 .setColor(0x42baff)
