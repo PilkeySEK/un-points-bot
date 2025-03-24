@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder, MessageFlags, PermissionFlagsBits, Sl
 import { get_user, get_user_points, get_wins, getAllFactions, getMonthlyPoints, MonthlyPoints } from "../../util/db";
 import { footer_icon_url } from "../../../config.json";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("stats")
         .setDescription("Get a user's stats")

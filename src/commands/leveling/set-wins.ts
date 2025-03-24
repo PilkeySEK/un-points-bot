@@ -1,7 +1,7 @@
 import { CommandInteraction, EmbedBuilder, MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { set_wins } from "../../util/db";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("set-wins")
         .setDescription("Set a user's win amount")

@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder, GuildMemberRoleManager, MessageFlags,
 import { add_win, addDailyPoints, get_user_points, set_user_points } from "../../util/db";
 import { win_point_amount, footer_icon_url, point_roles } from "../../../config.json";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("add-win")
         .setDescription("Use this when you won a game!"),

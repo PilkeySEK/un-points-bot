@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder, GuildMemberRoleManager, MessageFlags,
 import { get_user_points, remove_win, set_user_points } from "../../util/db";
 import { win_point_amount, footer_icon_url, point_roles } from "../../../config.json";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("remove-win")
         .setDescription("Un-register a win."),

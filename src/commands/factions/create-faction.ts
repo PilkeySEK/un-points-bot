@@ -1,7 +1,7 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { createFaction } from "../../util/db";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("create-faction")
         .setDescription("Create a new faction")

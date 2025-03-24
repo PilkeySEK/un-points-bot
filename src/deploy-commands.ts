@@ -2,7 +2,9 @@ import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCom
 import { client_id, token } from '../config.json';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] | any[] = [];
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
@@ -12,7 +14,7 @@ for (const folder of commandFolders) {
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
-		const command: { data: SlashCommandBuilder, execute: (interaction: any) => Promise<void> } = require(filePath);
+		const command: { data: SlashCommandBuilder, execute: (interaction: any) => Promise<void> } = (await import(filePath)).default;
         commands.push(command.data.toJSON());
 	}
 }

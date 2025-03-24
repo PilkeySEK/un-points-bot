@@ -2,25 +2,26 @@ import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.j
 import { getAllFactions, joinFaction } from "../../util/db";
 import { footer_icon_url } from "../../../config.json";
 
-module.exports = {
-    data: (async () => {
+export default {
+    data: await (async () => {
         const factions = await getAllFactions();
 
         return new SlashCommandBuilder()
-        .setName("join-faction")
-        .setDescription("Join the specified faction")
-        .addStringOption(option =>
-            option.setName("faction")
-                .setDescription("The faction")
-                .setRequired(true)
-                .addChoices(((): { name: string, value: string }[] => {
-                    let ret: { name: string, value: string }[] = [];
-                    factions.forEach(faction => {
-                        ret.push({ name: faction.name, value: faction.id });
-                    });
-                    return ret;
-                })())
-        )})(),
+            .setName("join-faction")
+            .setDescription("Join the specified faction")
+            .addStringOption(option =>
+                option.setName("faction")
+                    .setDescription("The faction")
+                    .setRequired(true)
+                    .addChoices(((): { name: string, value: string }[] => {
+                        let ret: { name: string, value: string }[] = [];
+                        factions.forEach(faction => {
+                            ret.push({ name: faction.name, value: faction.id });
+                        });
+                        return ret;
+                    })())
+            )
+    })(),
     execute: async (interaction: CommandInteraction) => {
         const faction = interaction.options.get("faction")?.value as string;
         const user = interaction.user;

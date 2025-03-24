@@ -4,11 +4,13 @@ import { Client, Collection, Events, GatewayIntentBits, MessageFlags, SlashComma
 import { token } from "../config.json";
 import { init } from "./util/db";
 import { getLastMonthEnd, Command } from "./util/util";
+import { fileURLToPath } from "node:url";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
 
 let commands: Collection<string, Command> = new Collection();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const foldersPath = path.join(__dirname, 'commands');
 const commandFolders = fs.readdirSync(foldersPath);
 
@@ -17,7 +19,7 @@ for (const folder of commandFolders) {
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file);
-        const command: { data: SlashCommandBuilder, execute: (interaction: any) => Promise<void> } = require(filePath);
+        const command: { data: SlashCommandBuilder, execute: (interaction: any) => Promise<void> } = (await import(filePath)).default;
         commands.set(command.data.name, new Command(command.data, command.execute));
     }
 }

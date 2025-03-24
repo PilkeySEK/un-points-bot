@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.j
 import { joinFaction } from "../../util/db";
 import { footer_icon_url } from "../../../config.json";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("leave-faction")
         .setDescription("Leave your faction"),

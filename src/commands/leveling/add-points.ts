@@ -1,7 +1,7 @@
 import { CommandInteraction, EmbedBuilder, MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { addDailyPoints, get_user_points, set_user_points } from "../../util/db";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("add-points")
         .setDescription("Add a amount to a user's point amount")

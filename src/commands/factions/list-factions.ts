@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.j
 import { factionMembers, getAllFactions, joinFaction } from "../../util/db";
 import { footer_icon_url } from "../../../config.json";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("list-factions")
         .setDescription("List all factions"),

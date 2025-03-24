@@ -17,5 +17,6 @@
   },
   "devDependencies": {
     "tsx": "^4.19.3"
-  }
+  },
+  "type":"module"
 }

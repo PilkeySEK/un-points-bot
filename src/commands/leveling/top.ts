@@ -2,7 +2,7 @@ import { CommandInteraction, EmbedBuilder, MessageFlags, SlashCommandBuilder } f
 import { get_top_10_by_points } from "../../util/db";
 import { footer_icon_url } from "../../../config.json";
 
-module.exports = {
+export default {
     data: new SlashCommandBuilder()
         .setName("top")
         .setDescription("Get the top 10 members by point amount"),
