@@ -31,7 +31,7 @@ module.exports = {
         })();
         const embed = new EmbedBuilder()
             .setColor(0x42baff)
-            .setDescription(`# Stats for <@${user.id}>\n__Points:__ ${points} pts\n__Wins:__ ${wins} ${wins == 1 ? "win" : "wins"}\n__Faction:__ ${factions.find(faction => faction.id == db_user.faction)}\n\n## Monthly Points\n${monthly_points}`)
+            .setDescription(`# Stats for <@${user.id}>\n__Points__: ${points} pts\n__Wins__: ${wins} ${wins == 1 ? "win" : "wins"}\n__Faction__: ${factions.find(faction => faction.id == db_user.faction)}\n\n## Monthly Points\n${monthly_points}`)
             .setTimestamp()
             .setFooter({ text: "UN Points Bot", iconURL: footer_icon_url })
         interaction.reply({ embeds: [embed] })
