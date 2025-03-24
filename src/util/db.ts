@@ -23,12 +23,19 @@ interface User {
     // points_this_month: number;
     // monthly_points: MonthlyPoints[];
     daily_points: DailyPoints[];
+    faction: string;
+}
+
+interface Faction {
+    id: string;
+    name: string;
 }
 
 const mongo_client = new MongoClient(mongo_uri);
 
 const database = mongo_client.db("un-points-bot");
 const user_collection = database.collection<User>("users");
+const faction_collection = database.collection<Faction>("factions");
 
 let quick_registered_lookup: string[]= [];
 
@@ -106,7 +113,7 @@ async function register_if_not_exist(user_id: string) {
     if(quick_registered_lookup.indexOf(user_id) != -1) return;
     const mongo_res = await user_collection.countDocuments({user_id: user_id}, {limit: 1});
     if(mongo_res == 1) return;
-    let user: User = {user_id: user_id, points: 0, wins: 0, daily_points: []};
+    let user: User = {user_id: user_id, points: 0, wins: 0, daily_points: [], faction: ""};
     register_user(user);
 }
 
@@ -201,6 +208,43 @@ export async function getMonthlyPoints(user_id: string): Promise<MonthlyPoints[]
         monthly.push({month: element.month, year: element.year, points: element.points});
     });
     return monthly;
+}
+
+export async function joinFaction(user_id: string, faction: string) {
+    await register_if_not_exist(user_id);
+    const res = await user_collection.updateOne({user_id: user_id}, {$set: {faction: faction}});
+    if(!res.acknowledged) throw new DatabaseError("Not acknowledged");
+}
+
+export async function getJoinedFaction(user_id: string): Promise<string | null> {
+    await register_if_not_exist(user_id);
+    const res = await user_collection.findOne({user_id: user_id});
+    if(res == null) return null;
+    return res.faction;
+}
+
+export async function createFaction(faction: Faction) {
+    const res = await faction_collection.insertOne(faction);
+    if(!res.acknowledged) throw new DatabaseError("Not acknowledged");
+}
+
+export async function deleteFaction(faction: string) {
+    const res = await faction_collection.deleteOne({id: faction});
+    if(!res.acknowledged) throw new DatabaseError("Not acknowledged");
+}
+
+export async function getFaction(faction: string): Promise<Faction | null> {
+    const res = await faction_collection.findOne({id: faction});
+    return res;
+}
+
+export async function getAllFactions(): Promise<Faction[]> {
+    const res = await faction_collection.find({}).toArray();
+    return res;
+}
+
+export async function factionMembers(faction: string): Promise<number> {
+    return await user_collection.countDocuments({faction: faction});
 }
 
 export async function is_connected(): Promise<boolean> {
