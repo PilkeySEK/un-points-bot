@@ -11,15 +11,15 @@ export default {
         await interaction.reply({
             embeds: [new EmbedBuilder()
                 .setColor(0x42baff)
-                .setDescription(`## Factions${((): string => {
+                .setDescription(`## Factions${await (async (): Promise<string> => {
                     let ret: string = "";
-                    factions.forEach(faction => {
+                    for (const faction of factions) {
                         ret += "\n**";
                         ret += faction.name;
                         ret += "**\n__Members__: `";
-                        ret += factionMembers(faction.id);
+                        ret += await factionMembers(faction.id);
                         ret += "`";
-                    });
+                    };
                     return ret == "" ? "\n*none*" : ret;
                 })()}`)
                 .setTimestamp()

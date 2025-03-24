@@ -26,7 +26,7 @@ export default {
         const faction = interaction.options.get("faction")?.value as string;
         const user = interaction.user;
         await joinFaction(user.id, faction);
-        const faction_name = (await getAllFactions()).find(f => f.id == faction);
+        const faction_name = (await getAllFactions()).find(f => f.id == faction)?.name;
         await interaction.reply({
             embeds: [new EmbedBuilder()
                 .setColor(0x42baff)

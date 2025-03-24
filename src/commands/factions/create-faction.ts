@@ -1,5 +1,6 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { createFaction } from "../../util/db";
+import { deploy } from "../../deploy-commands";
 
 export default {
     data: new SlashCommandBuilder()
@@ -20,6 +21,7 @@ export default {
         const name = interaction.options.get("name")?.value as string;
         const id = interaction.options.get("id")?.value as string;
         await createFaction({name: name, id: id});
+        await deploy();
         await interaction.reply("Done");
     }
 };

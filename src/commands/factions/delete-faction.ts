@@ -1,5 +1,6 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { deleteFaction, getAllFactions } from "../../util/db";
+import { deploy } from "../../deploy-commands";
 
 export default {
     data: await (async () => {
@@ -24,6 +25,7 @@ export default {
     execute: async (interaction: CommandInteraction) => {
         const faction = interaction.options.get("faction")?.value as string;
         await deleteFaction(faction);
+        await deploy();
         await interaction.reply("Done");
     }
 };
