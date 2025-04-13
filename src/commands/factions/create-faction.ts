@@ -16,12 +16,22 @@ export default {
                 .setDescription("The id")
                 .setRequired(true)
         )
+        .addAttachmentOption(option =>
+            option.setName("icon")
+                .setDescription("The Faction's icon")
+                .setRequired(false)
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     execute: async (interaction: CommandInteraction) => {
-        const name = interaction.options.get("name")?.value as string;
-        const id = interaction.options.get("id")?.value as string;
-        await createFaction({name: name, id: id});
+        const name = interaction.options.get("name", true).value as string;
+        const id = interaction.options.get("id", true).value as string;
+        let icon = interaction.options.get("icon", true).attachment;
+        let attachment_url = "";
+        if(icon == undefined) attachment_url = "";
+        else attachment_url = icon.url;
+        await createFaction({name: name, id: id, icon: attachment_url});
         await deploy();
-        await interaction.reply("Done");
+        if(attachment_url == "") await interaction.reply({content: "Done"});
+        else await interaction.reply({content: "Done", files: [attachment_url]});
     }
 };

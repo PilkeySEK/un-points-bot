@@ -29,6 +29,7 @@ interface User {
 interface Faction {
     id: string;
     name: string;
+    icon: string;
 }
 
 const mongo_client = new MongoClient(mongo_uri);
