@@ -1,5 +1,5 @@
 import { CommandInteraction, EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { factionMembers, getAllFactions, getFaction } from "../../util/db";
+import { factionMembers, factionStats, getAllFactions, getFaction } from "../../util/db";
 import { footer_icon_url } from "../../../config.json";
 
 export default {
@@ -29,9 +29,10 @@ export default {
             return;
         }
         const members = await factionMembers(faction_id);
+        const stats = await factionStats(faction_id);
         let embed = new EmbedBuilder()
             .setColor(0x42baff)
-            .setDescription(`## ${faction.name}\n__Members__: \`${members}\`\n__ID__: \`${faction.id}\``)
+            .setDescription(`## ${faction.name}\n__Members__: \`${members}\`\n__Points__: \`${stats.points}\`\n__Wins__:\`${stats.wins}\`\n__ID__: \`${faction.id}\``)
             .setTimestamp()
             .setFooter({ text: "UN Points Bot", iconURL: footer_icon_url });
         if (faction.icon != "") embed.setImage(faction.icon);
