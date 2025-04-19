@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction, GuildMember, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import { addDailyPoints } from "./db";
 
 export class Command {
@@ -35,4 +35,9 @@ export async function addPointsToCurrentDay(user_id: string, points: number) {
     const current_month = date.getUTCMonth();
     const current_year = date.getUTCFullYear();
     await addDailyPoints(user_id, points, current_day, current_month, current_year);
+}
+
+export async function isStaff(user: GuildMember) {
+    // TODO
+    return user.permissions.has(PermissionsBitField.Flags.Administrator);
 }

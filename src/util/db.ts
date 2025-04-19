@@ -20,6 +20,7 @@ interface User {
     user_id: string;
     points: number;
     wins: number;
+    recruits: number;
     // points_this_month: number;
     // monthly_points: MonthlyPoints[];
     daily_points: DailyPoints[];
@@ -114,7 +115,7 @@ async function register_if_not_exist(user_id: string) {
     if (quick_registered_lookup.indexOf(user_id) != -1) return;
     const mongo_res = await user_collection.countDocuments({ user_id: user_id }, { limit: 1 });
     if (mongo_res == 1) return;
-    let user: User = { user_id: user_id, points: 0, wins: 0, daily_points: [], faction: "" };
+    let user: User = { user_id: user_id, points: 0, wins: 0, daily_points: [], faction: "", recruits: 0 };
     register_user(user);
 }
 
@@ -124,7 +125,7 @@ async function register_if_not_exist(user_id: string) {
  * @throws `DatabaseError` if the document was not found or the operation was not acknowledged
  */
 export async function add_win(user_id: string) {
-    register_if_not_exist(user_id);
+    await register_if_not_exist(user_id);
     const res = await user_collection.updateOne({ user_id: user_id }, { $inc: { wins: 1 } });
     if (!res.acknowledged) throw new DatabaseError("Not acknowledged");
 }
@@ -137,6 +138,18 @@ export async function add_win(user_id: string) {
 export async function remove_win(user_id: string) {
     register_if_not_exist(user_id);
     const res = await user_collection.updateOne({ user_id: user_id }, { $inc: { wins: -1 } });
+    if (!res.acknowledged) throw new DatabaseError("Not acknowledged");
+}
+
+export async function add_recruit(user_id: string) {
+    register_if_not_exist(user_id);
+    const res = await user_collection.updateOne({ user_id: user_id }, { $inc: { recruits: 1 } });
+    if (!res.acknowledged) throw new DatabaseError("Not acknowledged");
+}
+
+export async function remove_recruit(user_id: string) {
+    register_if_not_exist(user_id);
+    const res = await user_collection.updateOne({ user_id: user_id }, { $inc: { recruits: -1 } });
     if (!res.acknowledged) throw new DatabaseError("Not acknowledged");
 }
 

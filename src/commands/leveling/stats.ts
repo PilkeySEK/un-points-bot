@@ -15,6 +15,7 @@ export default {
         const faction = factions.find(faction => faction.id == db_user.faction)?.name;
         const points = db_user.points;
         const wins = await get_wins(user.id);
+        const recruits = db_user.recruits;
         const monthly_points = await (async (): Promise<string> => {
             const monthly = await getMonthlyPoints(user.id);
             let str = "";
@@ -32,7 +33,7 @@ export default {
         })();
         const embed = new EmbedBuilder()
             .setColor(0x42baff)
-            .setDescription(`# Stats for <@${user.id}>\n__Points__: ${points} pts\n__Wins__: ${wins} ${wins == 1 ? "win" : "wins"}\n__Faction__: ${faction == undefined ? "*none*" : faction}\n\n## Monthly Points\n${monthly_points}`)
+            .setDescription(`# Stats for <@${user.id}>\n__Points__: ${points} pts\n__Wins__: ${wins} ${wins == 1 ? "win" : "wins"}\n__Recruits__: ${recruits} ${recruits == 1 ? "recruit" : "recruits"}\n__Faction__: ${faction == undefined ? "*none*" : faction}\n\n## Monthly Points\n${monthly_points}`)
             .setTimestamp()
             .setFooter({ text: "UN Points Bot", iconURL: footer_icon_url })
         interaction.reply({ embeds: [embed] })
