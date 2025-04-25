@@ -1,5 +1,5 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
-import { deleteFaction, getAllFactions } from "../../util/db";
+import { deleteFaction, getAllFactions, getFaction } from "../../util/db";
 import { deploy } from "../../deploy-commands";
 
 export default {
@@ -23,8 +23,12 @@ export default {
             .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     })(),
     execute: async (interaction: CommandInteraction) => {
-        const faction = interaction.options.get("faction")?.value as string;
-        await deleteFaction(faction);
+        const faction_id = interaction.options.get("faction", true).value as string;
+        const faction = await getFaction(faction_id);
+        if(faction == null) return;
+        await interaction.guild?.channels.delete(faction.channel, "Deleting faction channel");
+        await interaction.guild?.roles.delete(faction.role, "Deleting faction role");
+        await deleteFaction(faction_id);
         await deploy();
         await interaction.reply("Done");
     }

@@ -32,7 +32,14 @@ export default {
         const stats = await factionStats(faction_id);
         let embed = new EmbedBuilder()
             .setColor(0x42baff)
-            .setDescription(`## ${faction.name}\n__Members__: \`${members}\`\n__Points__: \`${stats.points}\`\n__Wins__:\`${stats.wins}\`\n__ID__: \`${faction.id}\``)
+            .setDescription(`
+                ## ${faction.name}
+                __Members__: \`${members}\`
+                __Points__: \`${stats.points}\`
+                __Wins__:\`${stats.wins}\`
+                __Tag__: \`${faction.tag}\`
+                __ID__: \`${faction.id}\`
+                `)
             .setTimestamp()
             .setFooter({ text: "UN Points Bot", iconURL: footer_icon_url });
         if (faction.icon != "") embed.setImage(faction.icon);

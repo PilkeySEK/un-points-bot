@@ -8,6 +8,12 @@ export default {
         .setDescription("Leave your faction"),
     execute: async (interaction: CommandInteraction) => {
         const user = interaction.user;
+        const faction = await getFaction(faction_id);
+        if (faction == null) {
+            await interaction.reply("Faction was not found :(");
+            return;
+        }
+        await interaction.guild?.members.removeRole({ role: faction.role, user: user, reason: "Removing role for leaving faction" });
         await joinFaction(user.id, "");
         await interaction.reply({
             embeds: [new EmbedBuilder()
