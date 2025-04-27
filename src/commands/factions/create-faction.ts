@@ -2,6 +2,7 @@ import { ChannelType, CommandInteraction, PermissionFlagsBits, SlashCommandBuild
 import { createFaction } from "../../util/db";
 import { deploy } from "../../deploy-commands";
 import { faction_channel_category, faction_role_create_below_role } from "../../../config.json";
+import { getStaffRolesForPermissionOverwrites } from "../../util/util";
 
 export default {
     data: new SlashCommandBuilder()
@@ -29,7 +30,7 @@ export default {
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     execute: async (interaction: CommandInteraction) => {
-        if(interaction.guild == null) return;
+        if (interaction.guild == null) return;
         const name = interaction.options.get("name", true).value as string;
         const id = interaction.options.get("id", true).value as string;
         const tag = interaction.options.get("tag", true).value as string;
@@ -39,7 +40,7 @@ export default {
         else attachment_url = icon.url;
 
         const faction_role_create_below = await interaction.guild.roles.fetch(faction_role_create_below_role);
-        if(faction_role_create_below == null) {
+        if (faction_role_create_below == null) {
             interaction.reply("Could not find the role to create the clan role below :(");
             return;
         }
@@ -54,20 +55,13 @@ export default {
             await interaction.reply("The category doesn't exist or could not be fetched :(");
             return;
         }
+        let overwrites = getStaffRolesForPermissionOverwrites();
+        overwrites.push({ id: interaction.guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] }, { id: faction_role.id, allow: [PermissionFlagsBits.ViewChannel] });
         const channel = await interaction.guild?.channels.create({
             name: `${tag}-talk`,
             reason: "Creating channel for new faction",
             type: ChannelType.GuildText,
-            permissionOverwrites: [
-                {
-                    id: interaction.guild.roles.everyone.id,
-                    deny: [PermissionFlagsBits.ViewChannel]
-                },
-                {
-                    id: faction_role.id,
-                    allow: [PermissionFlagsBits.ViewChannel]
-                }
-            ],
+            permissionOverwrites: overwrites,
             parent: faction_category.id
         });
 

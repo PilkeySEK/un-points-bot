@@ -1,5 +1,6 @@
-import { CommandInteraction, GuildMember, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
+import { CommandInteraction, GuildMember, OverwriteResolvable, PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import { addDailyPoints } from "./db";
+import { staff_roles } from "../../config.json";
 
 export class Command {
     constructor(data: SlashCommandBuilder, execute: (interaction: CommandInteraction) => Promise<void>) {
@@ -37,7 +38,21 @@ export async function addPointsToCurrentDay(user_id: string, points: number) {
     await addDailyPoints(user_id, points, current_day, current_month, current_year);
 }
 
-export async function isStaff(user: GuildMember) {
-    // TODO
-    return user.permissions.has(PermissionsBitField.Flags.Administrator);
+export async function isStaff(user: GuildMember): Promise<boolean> {
+    let is_staff: boolean = false;
+    for(const id in staff_roles) {
+        if(user.roles.cache.some(role => role.id == id)) {
+            is_staff = true;
+            break;
+        }
+    }
+    return user.permissions.has(PermissionsBitField.Flags.Administrator) || is_staff;
+}
+
+export function getStaffRolesForPermissionOverwrites() {
+    let ret: OverwriteResolvable[] = [];
+    staff_roles.forEach(id => {
+        ret.push({id: id, allow: [PermissionFlagsBits.ViewChannel]});
+    });
+    return ret;
 }
