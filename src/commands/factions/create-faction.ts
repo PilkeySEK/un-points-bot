@@ -58,7 +58,7 @@ export default {
         let overwrites = getStaffRolesForPermissionOverwrites();
         overwrites.push({ id: interaction.guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] }, { id: faction_role.id, allow: [PermissionFlagsBits.ViewChannel] });
         const channel = await interaction.guild?.channels.create({
-            name: `${tag}-talk`,
+            name: `🚩┃${tag}-talk`,
             reason: "Creating channel for new faction",
             type: ChannelType.GuildText,
             permissionOverwrites: overwrites,
