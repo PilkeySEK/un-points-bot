@@ -1,6 +1,7 @@
 import { CommandInteraction, GuildMember, OverwriteResolvable, PermissionFlagsBits, PermissionsBitField, SlashCommandBuilder, User } from "discord.js";
 import { addDailyPoints } from "./db";
 import { staff_roles } from "../../config.json";
+import { getLeaderboard, LeaderboardData } from "../api/api";
 
 export class Command {
     constructor(data: SlashCommandBuilder, execute: (interaction: CommandInteraction) => Promise<void>) {
@@ -55,4 +56,23 @@ export function getStaffRolesForPermissionOverwrites() {
         ret.push({id: id, allow: [PermissionFlagsBits.ViewChannel]});
     });
     return ret;
+}
+
+/**
+ * Page is zero-indexed
+ */
+export async function getLeaderboardPage(lb: LeaderboardData | undefined, page: number, entriesPerPage: number = 5) {
+    if(lb === undefined) return undefined;
+    const start = page * entriesPerPage;
+    const end = start + entriesPerPage;
+    const ret: LeaderboardData = [];
+    for(let i = start; i < end; i++) {
+        ret.push(lb[i]);
+    }
+    return ret;
+}
+
+export function countLeaderboardPages(lb: LeaderboardData | undefined, entriesPerPage: number = 5) {
+    if(lb === undefined) return -1;
+    return Math.ceil(lb.length / entriesPerPage);
 }
